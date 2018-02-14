@@ -5,17 +5,28 @@
 
 'use strict'
 
+const uuidv1 = require('uuid/v1')
+const axios = require('axios')
+
+const UUID = uuidv1()
+
 const { taskSchedules, Task, TcpTask, PingTask } = require('./checkhost-tasks.js')
 
-const HOST = process.env.HOST || 'volz.ua'
+// host to check:
+const HOST = process.env.HOST || 'google.com.ua'
+
+// type of the check (now only 'ping' and 'tcp' supported):
 const TYPE = process.env.TYPE === 'tcp' ? 'tcp' : 'ping'
+
+// should be URI to post data:
+const COLLECTOR = process.env.COLLECTOR
 
 var task
 
 if ( TYPE === 'tcp' ) {
-    task = new TcpTask(HOST, taskSchedules.day, false)
+    task = new TcpTask(HOST, taskSchedules.day)
 } else {
-    task = new PingTask(HOST, taskSchedules.day, false)
+    task = new PingTask(HOST, taskSchedules.day)
 }
 
 //task.on('response', resp => {
@@ -66,6 +77,21 @@ task.on('result', res => {
 
     lastat = result.datetime
 
+    if ( COLLECTOR ) {
+        axios.post(COLLECTOR, {
+            uuid: UUID,
+            host: HOST,
+            type: TYPE,
+            data: res,
+            stats: stats
+        })
+        .then(resp => {
+            // console.log('Sent to collector successfuly')
+        })
+        .catch(err => {
+            console.log(`Error sending data to collector, got "${err.message}"`)
+        })
+    }
 })
 .on('error', err => {
     console.log(err)
@@ -74,8 +100,9 @@ task.on('result', res => {
 
 task.run()
 
-module.exports = (request, response) => {
+module.exports = () => {
     return {
+        uuid: UUID,
         host: HOST,
         type: TYPE,
         started: task.starttime,

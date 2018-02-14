@@ -3,6 +3,7 @@
  * Getting results from check-host.net and parsing them.
  * https://check-host.net/about/api?lang=en
  *
+ * Now ony 'ping' and 'tcp' checks supported.
  */
 
 'use strict'
@@ -28,12 +29,12 @@ const taskSchedules = {
     }
 }
 
-const $timeout = (retryDelay) => {
+const $timeout = (delay) => {
     return new Promise((resolve, reject) => {
         let id = setTimeout(() => {
             clearTimeout(id)
-            resolve(retryDelay)
-        }, retryDelay)
+            resolve(delay)
+        }, delay)
     })
 }
 
@@ -102,6 +103,9 @@ class Task extends EventEmitter {
                 return $timeout(this.retryDelay)
                     .then(tmout => this.getResponseData(requestId))
             }
+        })
+        .catch(e => {
+            this.emit('error', e)
         })
     }
 

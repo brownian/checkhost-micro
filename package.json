@@ -2,7 +2,8 @@
   "description": "Collecting checks statistics from check-host.net.",
   "dependencies": {
     "axios": "^0.17.1",
-    "micro": "^9.1.0"
+    "micro": "^9.1.0",
+    "uuid": "^3.2.1"
   },
   "devDependencies": {
     "micro-dev": "^2.2.0"
