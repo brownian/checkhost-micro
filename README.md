@@ -14,3 +14,4 @@ summary on demand.
 ## now deployment
 
  * `now -e HOST=google.com`
+ * `now -e HOST=volz.ua brownian/checkhost-micro.git`
