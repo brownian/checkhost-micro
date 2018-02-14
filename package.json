@@ -1,0 +1,14 @@
+{
+  "description": "Collecting checks statistics from check-host.net.",
+  "dependencies": {
+    "axios": "^0.17.1",
+    "micro": "^9.1.0"
+  },
+  "devDependencies": {
+    "micro-dev": "^2.2.0"
+  },
+  "scripts": {
+    "start": "micro -p ${PORT:-3000}",
+    "dev": "micro-dev"
+  }
+}
