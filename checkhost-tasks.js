@@ -39,24 +39,35 @@ const $timeout = (delay) => {
 }
 
 class Task extends EventEmitter {
-    constructor (host, type, schedule, maxNodes, logger) {
+    // constructor (host, type, schedule, maxNodes, logger) {
+    constructor (host, type, options) {
         super()
         this.type = type
         this.host = host
-        this.maxNodes = maxNodes || 10
+        this.maxNodes = options.maxNodes || 10
+
+        var nodesStr
+        if ( options.nodeslist.length ) {
+            nodesStr = '&' + options.nodeslist.map(n=>'node='+n).join('&')
+        } else {
+            nodesStr = ''
+        }
         this.url = 'https://check-host.net/check-' + this.type
-                    + '?max_nodes=' + this.maxNodes + '&host=' + this.host,
+                    + '?max_nodes=' + this.maxNodes + '&host=' + this.host
+                    + nodesStr,
+
         this.checkResultUrl = 'https://check-host.net/check-result/'
-        this.runinterval = schedule.interval * 1000
+
+        this.runinterval = options.schedule.interval * 1000
         this.starttime = false
         this.stoptime = false
-        this.retryDelay = schedule.retryDelay * 1000
+        this.retryDelay = options.schedule.retryDelay * 1000
         this.runIntervalId = false
         this.testIntervalId = false
         this.attempt = 0
         this.maxAttempts = 3
 
-        this.logger = logger || console
+        this.logger = options.logger || console
 
         this.once('started', () => {
             this.logger.log('debug', 'Task just has been started.')
@@ -172,8 +183,8 @@ class Task extends EventEmitter {
 
 
 class TcpTask extends Task {
-    constructor (host, schedule, maxNodes, logger) {
-        super(host, 'tcp', schedule, maxNodes, logger)
+    constructor (host, options) {
+        super(host, 'tcp', options)
     }
 
     parseResult (result) {
@@ -215,8 +226,8 @@ class TcpTask extends Task {
 
 
 class PingTask extends Task {
-    constructor (host, schedule, maxNodes, logger) {
-        super(host, 'ping', schedule, maxNodes, logger)
+    constructor (host, options) {
+        super(host, 'ping', options)
     }
 
     parseResult (result) {

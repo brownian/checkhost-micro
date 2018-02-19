@@ -18,15 +18,24 @@ const HOST = process.env.HOST || 'google.com.ua'
 // type of the check (now only 'ping' and 'tcp' supported):
 const TYPE = process.env.TYPE === 'tcp' ? 'tcp' : 'ping'
 
+const NODES = process.env.NODES && process.env.NODES.split(',') || []
+
+console.log(NODES)
+
 // should be URI to post data:
 const COLLECTOR = process.env.COLLECTOR
 
 var task
 
+const options = {
+    schedule: taskSchedules.day,
+    nodeslist: NODES
+}
+
 if ( TYPE === 'tcp' ) {
-    task = new TcpTask(HOST, taskSchedules.day)
+    task = new TcpTask(HOST, options)
 } else {
-    task = new PingTask(HOST, taskSchedules.day)
+    task = new PingTask(HOST, options)
 }
 
 //task.on('response', resp => {
@@ -46,7 +55,8 @@ const stats = {
         mean: false,
         rms: false,
         stddev: false,
-    }
+    },
+    nodeslist: NODES
 }
 
 var lastat
