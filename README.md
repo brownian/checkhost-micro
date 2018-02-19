@@ -10,6 +10,7 @@ summary on demand.
 
  * `PORT=12345 HOST=google.com npm start`
  * `PORT=12345 HOST=google.com:80 TYPE=tcp npm start`
+ * `NODES=de1.node.check-host.net,ca2.node.check-host.net npm start`
 
 ## now deployment
 
